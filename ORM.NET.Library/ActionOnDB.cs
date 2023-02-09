@@ -37,23 +37,9 @@ namespace ORM.NET.Library
             };
         }
 
-        public List<Order> PrepareOrdersForUpload(DbContext dbContext, List<Product> productsList, List<Order> orderList)
+        public List<Order> PrepareOrdersForUpload(List<Product> productsList, List<Order> orderList)
         {
-            var products = new List<Product>();
-            var orders = new List<Order>();
-            foreach (var product in productsList)
-            {
-                var productForDb = CreateProductForDb(product);
-                products.Add(productForDb);
-            }
-
-            foreach (var order in orderList)
-            {
-                var orderForDb = CreateOrderForDb(order, products);
-                orders.Add(orderForDb);
-            }
-
-            return orders;
+            return orderList.Select(ord => CreateOrderForDb(ord, productsList.Select(CreateProductForDb).ToList())).ToList();
         }
     }
 }
