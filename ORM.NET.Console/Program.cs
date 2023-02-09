@@ -9,9 +9,9 @@ namespace ORM.NET.Console
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var actionOnDB = new ActionOnDB();
+            var actionOnDb = new ActionOnDB();
 
             var localProduct1 = new Product(1, "Milk", "Cow milk", (decimal)1.1, (decimal)1, (decimal)1, (decimal)1);
             var localProduct2 = new Product(2, "Milk", "Goat milk", (decimal)1.1, (decimal)1, (decimal)1, (decimal)1);
@@ -27,11 +27,13 @@ namespace ORM.NET.Console
 
             var localOrders = new List<Order>() { localOrder, localOrder2 };
 
-            var ordersToUpload = actionOnDB.PrepareOrdersForUpload(localProducts, localOrders);
+            var ordersToUpload = actionOnDb.PrepareOrdersForUpload(localProducts, localOrders);
 
-            UploadOrders(ordersToUpload);
-            RemoveOrder(1);
+            //UploadOrders(ordersToUpload);
+            //RemoveOrder(1);
 
+            //var orders = DownloadAllOrders();
+            var statusOrders = DownloadOrdersWithTheStatus(1);
         }
 
         public static void UploadOrders(List<Order> orders)
@@ -54,6 +56,26 @@ namespace ORM.NET.Console
             var context = new MyDbContext();
             context.Products.AddRange(products);
             context.SaveChanges();
+        }
+
+        public static void UpdateOrderStatus(int orderIndex, int updatedStatus)
+        {
+            var context = new MyDbContext();
+            var orderToUpdate = context.Orders.ElementAt(orderIndex);
+            orderToUpdate.Status = updatedStatus;
+            context.SaveChanges();
+        }
+
+        public static List<Order> DownloadAllOrders()
+        {
+            var context = new MyDbContext();
+            return context.Orders.ToList();
+        }
+
+        public static List<Order> DownloadOrdersWithTheStatus(int status)
+        {
+            var context = new MyDbContext();
+            return context.Orders.Where(j => j.Status == status).ToList();
         }
     }
 }
